@@ -19,27 +19,23 @@ complete = False
 
 playing = True
 
+board = Board()
+
 while playing:
-    play = input(f"Player {current_player} choose number (1-9): ")
+    x = int(input(f"Player {current_player} Coordenate x: "))
+    y = int(input(f"Player {current_player} Coordenate y: "))
 
-    if int(play):
-        if not spots[int(play)] in {"X", "O"}:
-            spots[int(play)] = current_player
-            create_board(spots)
-
-    if check_game(spots):
-        print(f"Player {current_player} wins! ")
-        complete = True
-        playing = False
-
-    if " " not in spots.values():
-        print("It's a tie!")
+    if board.play(x, y, current_player):
+        if board.game_logic(): 
+            playing = False
+        
+        board.show_board()
+            
+    else:
+        print("Congrats!!!!")
         playing = False
 
     if current_player == player1:
         current_player = player2
     else:
         current_player = player1
-
-
-    
