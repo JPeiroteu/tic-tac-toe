@@ -5,7 +5,6 @@ print("Rules:\n"
 "Select your desire number to play\n"
 "|7|8|9|\n|4|5|6|\n|1|2|3|\n")
 
-spots = {1: " ", 2: " ", 3: " ", 4: " ", 5: " ", 6: " ", 7: " ", 8: " ", 9: " "}
 
 player1 = input("Player1 choose X or O: ").upper()
 

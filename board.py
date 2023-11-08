@@ -1,26 +1,42 @@
-def create_board(spots):    
-    board = (f"|{spots[7]}|{spots[8]}|{spots[9]}|\n"
-    f"|{spots[4]}|{spots[5]}|{spots[6]}|\n"
-    f"|{spots[1]}|{spots[2]}|{spots[3]}|\n")
-    print(board)
+from cell import Cell
 
-def check_game(spots):
-    # horizontal check
-    if ((spots[7] == spots[8] == spots[8]) and (spots[7] != " ")) \
-    or ((spots[4] == spots[5] == spots[6]) and (spots[4] != " ")) \
-    or (spots[1] == spots[2] == spots[3]and (spots[1] != " ")):
-        return True
+class Board:
+    def __init__(self):
+        self.grid = []
 
-    # vertical check
-    if ((spots[7] == spots[4] == spots[1]) and (spots[7] != " ")) \
-    or ((spots[8] == spots[5] == spots[2]) and (spots[7] != " ")) \
-    or (spots[9] == spots[6] == spots[3] and (spots[9] != " ")):
-        return True
+    def create_board(self):
 
-    # diagonal check
-    if ((spots[1] == spots[5] == spots[9]) and (spots[1] != " ")) \
-    or ((spots[7] == spots[5] == spots[3]) and (spots[7] != " ")):
-        return True
+        '''
+        00 10 20 
+        01 11 21
+        02 12 22
+        '''
 
-    return False
+        for x in range(3):
+            for y in range(3):
+                self.grid.insert(Cell(x, y))
+
+    def get_cell(self, x, y):
+        for cell in self.grid:
+            if cell.x == x and cell.y == y:
+                return cell
+
+    def game_logic(self):
+        # vertical check
+        for x in self.grid:
+            if self.get_cell(x, 0).marker == self.get_cell(x, 1).marker == self.get_cell(x, 2).marker and self.get_cell(x, 0).marker != " ":
+                return True
+
+        # horizontal check
+        for y in self.grid:
+            if self.get_cell(0, y).marker == self.get_cell(1, y).marker == self.get_cell(2, y).marker and self.get_cell(0, y).marker != " ":
+                return True
+
+        # diagonal check
+        if self.get_cell(0, 0).marker == self.get_cell(1, 1).marker == self.get_cell(2, 2).marker and self.get_cell(0, 0).marker != " ":
+            return True
+        if self.get_cell(2, 0).marker == self.get_cell(1, 1).marker == self.get_cell(0, 2).marker and self.get_cell(2, 0).marker != " ":
+            return True
+
+        return False
 
