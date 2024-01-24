@@ -1,0 +1,82 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: "Press Start 2P", cursive;
+    background-color: #000; /* Background color set to black */
+    color: #fff; /* Text color set to white */
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-gap: 5px;
+    margin-top: 20px;
+    justify-content: center; /* Centraliza o grid na horizontal */
+
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    border: 1px solid #333;
+    font-size: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.cell:hover {
+    background-color: #f0f0f0;
+}
+
+button {
+    padding: 10px 20px; /* Aumentei o preenchimento para um visual mais retrô */
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    margin-top: 20px;
+    border-radius: 5px; /* Adicionei bordas arredondadas para um visual mais suave */
+    text-transform: uppercase; /* Transforma o texto do botão em maiúsculas */
+    letter-spacing: 2px; /* Adiciona um espaçamento extra entre as letras */
+    font-family: "Press Start 2P", cursive; /* Usando a fonte retro */
+}
+
+button:hover {
+    background-color: #45a049; /* Cor de fundo mais escura ao passar o mouse */
+}
+
+
+/* Added styles for turn message and result message */
+#turnMessage {
+    color: #4caf50;
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+#resultMessage {
+    color: #ff9800;
+    font-size: 24px;
+    margin-top: 20px;
+}
+
+/* Highlight the winning cells */
+.cell.winner {
+    background-color: #ffeb3b;
+    color: #000;
+}
+
+
