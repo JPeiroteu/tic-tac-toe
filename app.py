@@ -4,23 +4,24 @@ from board import Board
 app = Flask(__name__)
 
 board = Board()
-current_player = " "
+
 
 @app.route("/")
 def welcome():
     return render_template("index.html")
 
-    #return "<p>Welcome to Tic-Tac-Toe!</p>"
+    # return "<p>Welcome to Tic-Tac-Toe!</p>"
+
 
 @app.route("/cell/<x>/<y>")
 def get_cell(x, y):
     return board.get_cell(int(x), int(y)).to_dict()
 
+
 @app.route("/board")
 def get_board():
-    return {
-        "grid": board.to_dict()
-    }
+    return {"grid": board.to_dict()}
+
 
 @app.route("/cell/mark", methods=["POST"])
 def post_cell_mark():
@@ -38,9 +39,22 @@ def post_cell_mark():
             raise Exception("Invalid input. Please enter a valid number (0-2).")
 
     except ValueError:
-        return {"error": 'Invalid input. Please enter a number.'}
+        return {"error": "Invalid input. Please enter a number."}
     except Exception as e:
         return {"error": str(e)}
+
+
+@app.route("/check_winner", methods=["GET"])
+def check_winner():
+    winner = board.check_winner()
+
+    if winner:
+        return {"winner": winner}
+    elif board.is_board_full():
+        return {"winner": "Tie"}
+
+    else:
+        return {"winner": None}
 
 
 if __name__ == "__main__":
