@@ -8,7 +8,9 @@ class Board:
     def create_board(self):
         for x in range(3):
             for y in range(3):
-                self.grid.append(Cell(x, y))
+                self.grid.append(Cell(x, y)) 
+                #porque nao faco cell(x, y)? => cell = Cell(x, y)
+                # nao preciso fazer return?
     
     def show_board(self):
         for y in range(3):
@@ -18,7 +20,7 @@ class Board:
         for cell in self.grid:
             if cell.x == x and cell.y == y:
                 return cell
-        return None
+        return None    
 
     def get_mark(self, x, y):
         return self.get_cell(x, y).marker
@@ -39,21 +41,37 @@ class Board:
         for x in range(3):
             if self.get_mark(x, 0) == self.get_mark(x, 1) == self.get_mark(x, 2) != " ":
                 print("\nPlayer " + self.get_mark(x, 0) + " is the winner!")
-                return True
+                return self.get_mark(x, 0)
 
         # horizontal check
         for y in range(3):
             if self.get_mark(0, y) == self.get_mark(1, y) == self.get_mark(2, y) != " ":
                 print("\nPlayer " + self.get_cell(0, y).marker + " is the winner!")
-                return True
+                return self.get_mark(0, y)
 
         # diagonal check
         if self.get_mark(0, 0) == self.get_mark(1, 1) == self.get_mark(2, 2) != " ":
             print("\nPlayer " + self.get_cell(0, 0).marker + " is the winner!")
-            return True
+            return self.get_mark(0, 0)
+
         if self.get_mark(2, 0) == self.get_mark(1, 1) == self.get_mark(0, 2) != " ":
             print("\nPlayer " + self.get_cell(2, 0).marker + " is the winner!")
-            return True
+            return self.get_mark(2, 0)
 
         return False
 
+    def is_board_full(self):
+        for cell in self.grid:
+            if cell.marker == " ":
+                return False
+
+        print("Draw")
+        return True
+
+    def to_dict(self):
+        d = []
+
+        for cell in self.grid:
+            d.append(cell.to_dict())
+
+        return d
