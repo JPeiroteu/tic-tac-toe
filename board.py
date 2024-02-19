@@ -68,6 +68,10 @@ class Board:
         print("Draw")
         return True
 
+    def reset(self):
+        self.grid = []
+        self.create_board()
+
     def to_dict(self):
         d = []
 
