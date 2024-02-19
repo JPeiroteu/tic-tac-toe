@@ -56,6 +56,11 @@ def check_winner():
     else:
         return {"winner": None}
 
+@app.route("/reset_board", methods=["GET"])
+def reset_board():
+    board.reset()
+    return "Ok"
+
 
 if __name__ == "__main__":
     app.run(port=8000, debug=True)
