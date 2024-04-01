@@ -3,7 +3,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const pageTitle = document.getElementById("pageTitle");
     const turnMessage = document.getElementById("turnMessage");
     const board = document.getElementById("board");
-    //const updateInterval = setInterval(updateBoard, 5000);
+    
+    setInterval(updateBoard, 5000);
 
     pageTitle.style.display = "block";
     turnMessage.style.display = "none";
@@ -97,6 +98,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         };
         xhr.send();
+        location.reload();
     }
 
 });
