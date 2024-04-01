@@ -23,7 +23,6 @@ class Game:
             else:
                 print("Invalid input. Please enter X or O.")
 
-        
     def input_coordinates(self):
         while True:
             try:
@@ -35,7 +34,12 @@ class Game:
                 if cell.marker != " ":
                     print("Choose another cell!")
                 elif x <= 2 and x >= 0 and y >= 0 and y <= 2:
-                    return {"x" : x, "y" : y}
+                    return x, y
+                    '''
+                    The tuple is accessed in order and immutable
+                    The list is accessed in order and mutable
+                    The dict is accessed by key
+                    '''
                 else:
                     print('Invalid input. Please enter a valid number (0-2).')
        
@@ -43,11 +47,13 @@ class Game:
                 print('Invalid input. Please enter a valid number (0-2).')       
 
     def playing(self):
-        coord = self.input_coordinates()
+        coord_x, coord_y = self.input_coordinates()
 
-        if self.board.play(coord["x"], coord["y"], self.current_player):
+        if self.board.play(coord_x, coord_y, self.current_player):
             self.board.show_board()
             if self.board.check_winner(): 
+                self.completed = True
+            elif self.board.is_board_full():
                 self.completed = True
 
         if self.current_player == self.player1:
