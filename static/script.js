@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
     turnMessage.style.display = "none";
     board.style.display = "none";
     resetButton.style.display = "none";
+    setInterval(updateBoard, 1000);
 
     let currentPlayer;
 
@@ -17,8 +18,9 @@ document.addEventListener("DOMContentLoaded", function() {
         board.style.display = "grid";
         resetButton.style.display = "block";
 
-        updateTurnMessage();
+        getCurrentPlayer(updateTurnMessage);
         updateBoard();
+        checkWinner();
     });
 
     board.addEventListener("click", function(event) {
@@ -48,10 +50,10 @@ document.addEventListener("DOMContentLoaded", function() {
         xhr.onload = function() {
             if (xhr.status === 200) {
                 const data = JSON.parse(xhr.responseText);
-                event.target.textContent = data.result; // Use 'result' conforme a resposta do servidor
+                event.target.textContent = data.result; 
+                getCurrentPlayer(updateTurnMessage);
                 updateBoard();
-                getCurrentPlayer(updateTurnMessage); // Atualize o jogador atual após a jogada
-                checkWinner(); // Certifique-se de que esta função esteja definida
+                checkWinner();
             }
         };
         xhr.send(`x=${x}&y=${y}&mark=${player}`);
