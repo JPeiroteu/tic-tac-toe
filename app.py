@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from board import Board
 
 app = Flask(__name__)
 
 board = Board()
-
+currentPlayer = "X"
 
 @app.route("/")
 def welcome():
@@ -23,6 +23,16 @@ def get_board():
     return {"grid": board.to_dict()}
 
 
+@app.route('/player/current', methods=['GET', 'POST'])
+def current_player():
+    global currentPlayer
+    if request.method == 'POST':
+        currentPlayer = request.form['currentPlayer']
+        return jsonify(success=True)
+    else:
+        return jsonify(currentPlayer=currentPlayer)
+
+
 @app.route("/cell/mark", methods=["POST"])
 def post_cell_mark():
     try:
@@ -34,6 +44,8 @@ def post_cell_mark():
 
         if 0 <= x <= 2 and 0 <= y <= 2:
             cell.mark(mark)
+            global currentPlayer
+            currentPlayer = "O" if currentPlayer == "X" else "X"
             return cell.to_dict()
         else:
             raise Exception("Invalid input. Please enter a valid number (0-2).")
@@ -63,4 +75,4 @@ def reset_board():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True) # mac port 8000, server 5000
