@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", function() {
     board.style.display = "none";
     resetButton.style.display = "none";
     setInterval(updateBoard, 1000);
+    setInterval(getCurrentPlayer(updateTurnMessage), 1000);
+    setInterval(checkWinner, 1000);
+
 
     let currentPlayer;
 
