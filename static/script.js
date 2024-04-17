@@ -90,7 +90,8 @@ document.addEventListener("DOMContentLoaded", function() {
             if (xhr.status === 200) {
                 const winnerData = JSON.parse(xhr.responseText);
                 if (winnerData.winner) {
-                    turnMessage.textContent = winnerData.winner + " wins!";
+                    const winnerMarker = winnerData.winner.marker;
+                    turnMessage.textContent = winnerMarker + " wins!";
                 } else if (winnerData.draw) {
                     turnMessage.textContent = "It's a draw!";
                 }
@@ -98,6 +99,7 @@ document.addEventListener("DOMContentLoaded", function() {
         };
         xhr.send();
     }
+    
 
     resetButton.addEventListener("click", function() {
         resetButton.style.display = "none";

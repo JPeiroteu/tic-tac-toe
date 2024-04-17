@@ -58,15 +58,15 @@ def post_cell_mark():
 
 @app.route("/check_winner", methods=["GET"])
 def check_winner():
-    winner = board.check_winner()
+    win_cell, win_cell2, win_cell3 = board.check_winner()
 
-    if winner:
-        return {"winner": winner}
+    if win_cell:
+        return {"win_cell": win_cell, "win_cell2": win_cell2, "win_cell3": win_cell3}
     elif board.is_board_full():
         return {"winner": "Tie"}
-
     else:
         return {"winner": None}
+
 
 @app.route("/reset_board", methods=["GET"])
 def reset_board():

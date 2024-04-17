@@ -41,24 +41,25 @@ class Board:
         for x in range(3):
             if self.get_mark(x, 0) == self.get_mark(x, 1) == self.get_mark(x, 2) != " ":
                 print("\nPlayer " + self.get_mark(x, 0) + " is the winner!")
-                return self.get_mark(x, 0)
+                return (self.get_cell(x, 0).to_dict(), self.get_cell(x, 1).to_dict(), self.get_cell(x, 2).to_dict())
 
         # horizontal check
         for y in range(3):
             if self.get_mark(0, y) == self.get_mark(1, y) == self.get_mark(2, y) != " ":
-                print("\nPlayer " + self.get_cell(0, y).marker + " is the winner!")
-                return self.get_mark(0, y)
+                print("\nPlayer " + self.get_mark(0, y) + " is the winner!")
+                return (self.get_cell(0, y).to_dict(), self.get_cell(1, y).to_dict(), self.get_cell(2, y).to_dict())
 
         # diagonal check
         if self.get_mark(0, 0) == self.get_mark(1, 1) == self.get_mark(2, 2) != " ":
-            print("\nPlayer " + self.get_cell(0, 0).marker + " is the winner!")
-            return self.get_mark(0, 0)
+            print("\nPlayer " + self.get_mark(0, 0) + " is the winner!")
+            return (self.get_cell(0, 0).to_dict(), self.get_cell(1, 1).to_dict(), self.get_cell(2, 2).to_dict())
 
         if self.get_mark(2, 0) == self.get_mark(1, 1) == self.get_mark(0, 2) != " ":
-            print("\nPlayer " + self.get_cell(2, 0).marker + " is the winner!")
-            return self.get_mark(2, 0)
+            print("\nPlayer " + self.get_mark(2, 0) + " is the winner!")
+            return (self.get_cell(2, 0).to_dict(), self.get_cell(1, 1).to_dict(), self.get_cell(0, 2).to_dict())
 
-        return False
+        return (None, None, None)
+
 
     def is_board_full(self):
         for cell in self.grid:
