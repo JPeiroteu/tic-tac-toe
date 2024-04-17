@@ -89,8 +89,8 @@ document.addEventListener("DOMContentLoaded", function() {
         xhr.onload = function() {
             if (xhr.status === 200) {
                 const winnerData = JSON.parse(xhr.responseText);
-                if (winnerData.winner) {
-                    const winnerMarker = winnerData.winner.marker;
+                if (winnerData.win_cell.marker) {
+                    const winnerMarker = winnerData.win_cell.marker;
                     turnMessage.textContent = winnerMarker + " wins!";
                 } else if (winnerData.draw) {
                     turnMessage.textContent = "It's a draw!";
