@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from board import Board
+from tictactoe.board import Board
 
 app = Flask(__name__)
 

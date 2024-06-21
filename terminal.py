@@ -1,4 +1,4 @@
-from game import Game
+from tictactoe.game import Game
 
 print("TicTacToe Game\n")
 print("Rules:\n"
