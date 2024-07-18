@@ -13,3 +13,8 @@ class TestApp(unittest.TestCase):
         
         response = self.app.post('/cell/mark', data={'x': 0, 'y': 1, 'mark': 'O'})
         self.assertEqual(response.json, {'marker': 'O', 'x': 0, 'y': 1})
+
+    def test_check_overlapping_marks(self):
+        self.app.post('/cell/mark', data={'x': 1, 'y': 1, 'mark': 'X'})
+        response = self.app.post('/cell/mark', data={'x': 1, 'y': 1, 'mark': 'O'})
+        self.assertEqual(response.json['error'], 'Choose another cell!')
