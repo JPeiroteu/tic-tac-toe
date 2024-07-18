@@ -18,3 +18,7 @@ class TestApp(unittest.TestCase):
         self.app.post('/cell/mark', data={'x': 1, 'y': 1, 'mark': 'X'})
         response = self.app.post('/cell/mark', data={'x': 1, 'y': 1, 'mark': 'O'})
         self.assertEqual(response.json['error'], 'Choose another cell!')
+
+    def test_current_player(self):
+        response = self.app.get('/player/current')
+        self.assertEqual(response.json, {'currentPlayer': 'X'})
