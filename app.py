@@ -17,17 +17,15 @@ def welcome():
     """Render the welcome page"""
     return render_template("index.html")
 
-@app.route("/cell/<x>/<y>")
-def get_cell(x, y):
+@app.route("/cell/<int:x_coord>/<int:y_coord>")
+def get_cell(x_coord, y_coord):
     """Get the state of a specific cell"""
-    return board.get_cell(int(x), int(y)).to_dict()
-
+    return board.get_cell(x_coord, y_coord).to_dict()
 
 @app.route("/board")
 def get_board():
     """Get the current state of the board"""
     return {"grid": board.to_dict()}
-
 
 @app.route('/player/current', methods=['GET', 'POST'])
 def current_player():
@@ -38,21 +36,20 @@ def current_player():
         return {"success": True}
     return {"currentPlayer": currentPlayer}
 
-
 @app.route("/cell/mark", methods=["POST"])
 def post_cell_mark():
     """Mark a cell on the board"""
     try:
-        x = int(request.form["x"])
-        y = int(request.form["y"])
+        x_coord = int(request.form["x"])
+        y_coord = int(request.form["y"])
         mark = request.form["mark"]
 
-        cell = board.get_cell(x, y)
+        cell = board.get_cell(x_coord, y_coord)
 
-        if 0 <= x <= 2 and 0 <= y <= 2:
+        if 0 <= x_coord <= 2 and 0 <= y_coord <= 2:
             cell.mark(mark)
-            global currentPlayer
-            currentPlayer = "O" if currentPlayer == "X" else "X"
+            global current_player
+            current_player = "O" if current_player == "X" else "X"
             return cell.to_dict()
         else:
             raise Exception("Invalid input. Please enter a valid number (0-2).")
@@ -61,7 +58,6 @@ def post_cell_mark():
         return {"error": "Invalid input. Please enter a number."}
     except Exception as e:
         return {"error": str(e)}
-
 
 @app.route("/check_winner", methods=["GET"])
 def check_winner():
@@ -75,14 +71,11 @@ def check_winner():
     else:
         return {"winner": None}
 
-
 @app.route("/reset_board", methods=["GET"])
 def reset_board():
     """Reset the board to its initial state"""
     board.reset()
     return "Ok"
 
-
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True) # mac port 8000, server 5000
-    
+    app.run(host='0.0.0.0', port=5000, debug=True)  # mac port 8000, server 5000
