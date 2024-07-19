@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 from tictactoe.board import Board
 
 app = Flask(__name__)
@@ -28,9 +28,9 @@ def current_player():
     global currentPlayer
     if request.method == 'POST':
         currentPlayer = request.form['currentPlayer']
-        return jsonify(success=True)
+        return {"success": True}
     else:
-        return jsonify(currentPlayer=currentPlayer)
+        return {"currentPlayer": currentPlayer}
 
 
 @app.route("/cell/mark", methods=["POST"])
