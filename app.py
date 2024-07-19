@@ -51,8 +51,8 @@ def post_cell_mark():
             global current_player
             current_player = "O" if current_player == "X" else "X"
             return cell.to_dict()
-        else:
-            raise Exception("Invalid input. Please enter a valid number (0-2).")
+
+        raise Exception("Invalid input. Please enter a valid number (0-2).")
 
     except ValueError:
         return {"error": "Invalid input. Please enter a number."}
@@ -66,10 +66,11 @@ def check_winner():
 
     if win_cell:
         return {"win_cell": win_cell, "win_cell2": win_cell2, "win_cell3": win_cell3}
-    elif board.is_board_full():
+
+    if board.is_board_full():
         return {"winner": "Tie"}
-    else:
-        return {"winner": None}
+
+    return {"winner": None}
 
 @app.route("/reset_board", methods=["GET"])
 def reset_board():
