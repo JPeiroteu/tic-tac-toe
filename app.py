@@ -44,20 +44,19 @@ def post_cell_mark():
         y_coord = int(request.form["y"])
         mark = request.form["mark"]
 
+        if not (0 <= x_coord <= 2 and 0 <= y_coord <= 2):
+            raise ValueError("Invalid input. Please enter a valid number (0-2).")
+
         cell = board.get_cell(x_coord, y_coord)
-
-        if 0 <= x_coord <= 2 and 0 <= y_coord <= 2:
-            cell.mark(mark)
-            global current_player
-            current_player = "O" if current_player == "X" else "X"
-            return cell.to_dict()
-
-        raise Exception("Invalid input. Please enter a valid number (0-2).")
+        cell.mark(mark)
+        global current_player
+        current_player = "O" if current_player == "X" else "X"
+        return cell.to_dict()
 
     except ValueError:
         return {"error": "Invalid input. Please enter a number."}
-    except Exception as e:
-        return {"error": str(e)}
+    except Exception as error:
+        return {"error": str(error)}
 
 @app.route("/check_winner", methods=["GET"])
 def check_winner():
