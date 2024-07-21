@@ -50,3 +50,25 @@ class TestCell(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             cell.mark("A")
         self.assertTrue("Invalid marker!" in str(context.exception))
+        
+    def test_mark_already_marked(self):
+        """Test that the mark method raises an exception if the cell is already marked"""
+        cell = Cell(1, 2)
+        cell.mark("X")
+        with self.assertRaises(Exception) as context:
+            cell.mark("O")
+        self.assertTrue("Choose another cell!" in str(context.exception))
+
+    def test_mark_empty_marker(self):
+        """Test that the mark method raises an exception for an empty marker"""
+        cell = Cell(1, 2)
+        with self.assertRaises(Exception) as context:
+            cell.mark("")
+        self.assertTrue("Invalid marker!" in str(context.exception))
+
+    def test_to_dict(self):
+        """Test that the to_dict method returns the correct dictionary representation of the cell"""
+        cell = Cell(1, 2)
+        self.assertEqual(cell.to_dict(), {"x": 1, "y": 2, "marker": " "})
+        cell.mark("X")
+        self.assertEqual(cell.to_dict(), {"x": 1, "y": 2, "marker": "X"})
