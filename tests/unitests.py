@@ -26,3 +26,14 @@ class TestCell(unittest.TestCase):
             Cell(1, "b")
         with self.assertRaises(TypeError):
             Cell(1, 2, 3)
+
+    def test_is_empty_true(self):
+        """Test that the is_empty method returns True for an unmarked cell"""
+        cell = Cell(1, 2)
+        self.assertTrue(cell.is_empty())
+
+    def test_is_empty_false(self):
+        """Test that the is_empty method returns False for a marked cell"""
+        cell = Cell(1, 2)
+        cell.marker = "X"
+        self.assertFalse(cell.is_empty())
