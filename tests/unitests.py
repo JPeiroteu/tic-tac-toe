@@ -37,3 +37,16 @@ class TestCell(unittest.TestCase):
         cell = Cell(1, 2)
         cell.marker = "X"
         self.assertFalse(cell.is_empty())
+
+    def test_mark_valid(self):
+        """Test that the mark method correctly sets a valid marker"""
+        cell = Cell(1, 2)
+        cell.mark("X")
+        self.assertEqual(cell.marker, "X")
+
+    def test_mark_invalid_marker(self):
+        """Test that the mark method raises an exception for an invalid marker"""
+        cell = Cell(1, 2)
+        with self.assertRaises(Exception) as context:
+            cell.mark("A")
+        self.assertTrue("Invalid marker!" in str(context.exception))
