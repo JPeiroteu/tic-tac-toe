@@ -1,12 +1,13 @@
 """
-Unit tests for the Cell class in the TicTacToe game
+Unit tests for the Cell and Board classes in the TicTacToe game
 
 This module contains tests for verifying the behavior and correctness of the
-Cell class, including its initialization and handling of invalid inputs.
+Cell class and it also contains tests for the Board class.
 """
 
 import unittest
 from tictactoe.cell import Cell
+from tictactoe.board import Board
 
 class TestCell(unittest.TestCase):
     """Tests for the Cell class in the TicTacToe game"""
@@ -50,7 +51,7 @@ class TestCell(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             cell.mark("A")
         self.assertTrue("Invalid marker!" in str(context.exception))
-        
+
     def test_mark_already_marked(self):
         """Test that the mark method raises an exception if the cell is already marked"""
         cell = Cell(1, 2)
@@ -72,3 +73,17 @@ class TestCell(unittest.TestCase):
         self.assertEqual(cell.to_dict(), {"x": 1, "y": 2, "marker": " "})
         cell.mark("X")
         self.assertEqual(cell.to_dict(), {"x": 1, "y": 2, "marker": "X"})
+
+class TestBoard(unittest.TestCase):
+    """Tests for the Board class in the TicTacToe game"""
+
+    def setUp(self):
+        """Set up a new board for each test"""
+        self.board = Board()
+
+    def test_create_board(self):
+        """Test that the board initializes correctly with 9 cells"""
+        self.assertEqual(len(self.board.grid), 9)
+        for cell in self.board.grid:
+            self.assertIsInstance(cell, Cell)
+            self.assertEqual(cell.marker, " ")
