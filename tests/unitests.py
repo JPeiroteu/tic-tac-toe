@@ -87,3 +87,15 @@ class TestBoard(unittest.TestCase):
         for cell in self.board.grid:
             self.assertIsInstance(cell, Cell)
             self.assertEqual(cell.marker, " ")
+
+    def test_get_cell(self):
+        """Test that get_cell method returns the correct cell."""
+        cell = self.board.get_cell(0, 0)
+        self.assertEqual(cell.x, 0)
+        self.assertEqual(cell.y, 0)
+        self.assertEqual(cell.marker, " ")
+
+    def test_get_cell_invalid(self):
+        """Test that get_cell method returns None for invalid coordinates."""
+        cell = self.board.get_cell(3, 3)
+        self.assertIsNone(cell)
