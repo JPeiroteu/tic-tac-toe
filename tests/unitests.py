@@ -145,3 +145,18 @@ class TestBoard(unittest.TestCase):
         result = self.board.check_winner()
         self.assertIsNotNone(result)
         self.assertEqual(result[0]['marker'], "X")
+
+    def test_check_no_winner(self):
+        """Test that check_winner method returns no winner when there is no complete line."""
+        self.board.play(0, 0, "X")
+        self.board.play(1, 0, "O")
+        self.board.play(2, 0, "X")
+        result = self.board.check_winner()
+        self.assertEqual(result, (None, None, None))
+
+    def test_is_board_full(self):
+        """Test that is_board_full method correctly identifies a fully occupied board."""
+        for x in range(3):
+            for y in range(3):
+                self.board.play(x, y, "X")
+        self.assertTrue(self.board.is_board_full())
