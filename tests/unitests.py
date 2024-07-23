@@ -89,13 +89,32 @@ class TestBoard(unittest.TestCase):
             self.assertEqual(cell.marker, " ")
 
     def test_get_cell(self):
-        """Test that get_cell method returns the correct cell."""
+        """Test that get_cell method returns the correct cell"""
         cell = self.board.get_cell(0, 0)
         self.assertEqual(cell.x, 0)
         self.assertEqual(cell.y, 0)
         self.assertEqual(cell.marker, " ")
 
     def test_get_cell_invalid(self):
-        """Test that get_cell method returns None for invalid coordinates."""
+        """Test that get_cell method returns None for invalid coordinates"""
         cell = self.board.get_cell(3, 3)
         self.assertIsNone(cell)
+
+    def test_play_valid(self):
+        """Test that the play method correctly marks a cell with a valid marker"""
+        result = self.board.play(0, 0, "X")
+        self.assertTrue(result)
+        self.assertEqual(self.board.get_mark(0, 0), "X")
+
+    def test_play_invalid_marker(self):
+        """Test that the play method returns False and does not change the cell for an invalid marker"""
+        result = self.board.play(0, 0, "A")
+        self.assertFalse(result)
+        self.assertEqual(self.board.get_mark(0, 0), " ")
+
+    def test_play_occupied_cell(self):
+        """Test that the play method raises an exception when trying to mark an already occupied cell"""
+        self.board.play(0, 0, "X")
+        with self.assertRaises(Exception) as context:
+            self.board.play(0, 0, "O")
+        self.assertTrue("Choose another cell!" in str(context.exception))
