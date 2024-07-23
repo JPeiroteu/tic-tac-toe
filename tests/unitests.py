@@ -118,3 +118,30 @@ class TestBoard(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             self.board.play(0, 0, "O")
         self.assertTrue("Choose another cell!" in str(context.exception))
+
+    def test_check_winner_vertical(self):
+        """Test that the check_winner method correctly identifies a vertical win."""
+        self.board.play(0, 0, "X")
+        self.board.play(0, 1, "X")
+        self.board.play(0, 2, "X")
+        result = self.board.check_winner()
+        self.assertIsNotNone(result)
+        self.assertEqual(result[0]['marker'], "X")
+
+    def test_check_winner_horizontal(self):
+        """Test that the check_winner method correctly identifies a horizontal win."""
+        self.board.play(0, 0, "X")
+        self.board.play(1, 0, "X")
+        self.board.play(2, 0, "X")
+        result = self.board.check_winner()
+        self.assertIsNotNone(result)
+        self.assertEqual(result[0]['marker'], "X")
+
+    def test_check_winner_diagonal(self):
+        """Test that the check_winner method correctly identifies a diagonal win."""
+        self.board.play(0, 0, "X")
+        self.board.play(1, 1, "X")
+        self.board.play(2, 2, "X")
+        result = self.board.check_winner()
+        self.assertIsNotNone(result)
+        self.assertEqual(result[0]['marker'], "X")
