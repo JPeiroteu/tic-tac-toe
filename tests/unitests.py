@@ -120,7 +120,7 @@ class TestBoard(unittest.TestCase):
         self.assertTrue("Choose another cell!" in str(context.exception))
 
     def test_check_winner_vertical(self):
-        """Test that the check_winner method correctly identifies a vertical win."""
+        """Test that the check_winner method correctly identifies a vertical win"""
         self.board.play(0, 0, "X")
         self.board.play(0, 1, "X")
         self.board.play(0, 2, "X")
@@ -129,7 +129,7 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(result[0]['marker'], "X")
 
     def test_check_winner_horizontal(self):
-        """Test that the check_winner method correctly identifies a horizontal win."""
+        """Test that the check_winner method correctly identifies a horizontal win"""
         self.board.play(0, 0, "X")
         self.board.play(1, 0, "X")
         self.board.play(2, 0, "X")
@@ -138,7 +138,7 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(result[0]['marker'], "X")
 
     def test_check_winner_diagonal(self):
-        """Test that the check_winner method correctly identifies a diagonal win."""
+        """Test that the check_winner method correctly identifies a diagonal win"""
         self.board.play(0, 0, "X")
         self.board.play(1, 1, "X")
         self.board.play(2, 2, "X")
@@ -147,7 +147,7 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(result[0]['marker'], "X")
 
     def test_check_no_winner(self):
-        """Test that check_winner method returns no winner when there is no complete line."""
+        """Test that check_winner method returns no winner when there is no complete line"""
         self.board.play(0, 0, "X")
         self.board.play(1, 0, "O")
         self.board.play(2, 0, "X")
@@ -155,8 +155,20 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(result, (None, None, None))
 
     def test_is_board_full(self):
-        """Test that is_board_full method correctly identifies a fully occupied board."""
+        """Test that is_board_full method correctly identifies a fully occupied board"""
         for x in range(3):
             for y in range(3):
                 self.board.play(x, y, "X")
         self.assertTrue(self.board.is_board_full())
+
+    def test_reset(self):
+        """Test that reset method clears the board and sets all cells to empty"""
+        self.board.play(0, 0, "X")
+        self.board.reset()
+        self.assertEqual(self.board.get_mark(0, 0), " ")
+
+    def test_to_dict(self):
+        """Test that to_dict method returns the correct dictionary representation of the board"""
+        self.board.play(0, 0, "X")
+        result = self.board.to_dict()
+        self.assertEqual(result[0]['marker'], "X")
