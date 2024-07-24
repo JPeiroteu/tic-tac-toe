@@ -6,8 +6,10 @@ Cell class and it also contains tests for the Board class.
 """
 
 import unittest
+from unittest.mock import patch
 from tictactoe.cell import Cell
 from tictactoe.board import Board
+from tictactoe.game import Game
 
 class TestCell(unittest.TestCase):
     """Tests for the Cell class in the TicTacToe game"""
@@ -172,3 +174,26 @@ class TestBoard(unittest.TestCase):
         self.board.play(0, 0, "X")
         result = self.board.to_dict()
         self.assertEqual(result[0]['marker'], "X")
+
+class TestGame(unittest.TestCase):
+    """Tests for the Game class in the TicTacToe game"""
+
+    def setUp(self):
+        """Set up a new game instance for each test"""
+        self.game = Game()
+
+    @patch('builtins.input', side_effect=['X'])
+    def test_choose_marker_player1_X(self, mock_input):
+        """Test that choosing X as player1's marker sets player1 to X and player2 to O"""
+        self.game.choose_marker()
+        self.assertEqual(self.game.player1, 'X')
+        self.assertEqual(self.game.player2, 'O')
+        self.assertEqual(self.game.current_player, 'X')
+
+    @patch('builtins.input', side_effect=['O'])
+    def test_choose_marker_player1_O(self, mock_input):
+        """Test that choosing O as player1's marker sets player1 to O and player2 to X"""
+        self.game.choose_marker()
+        self.assertEqual(self.game.player1, 'O')
+        self.assertEqual(self.game.player2, 'X')
+        self.assertEqual(self.game.current_player, 'O')
