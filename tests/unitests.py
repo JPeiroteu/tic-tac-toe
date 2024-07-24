@@ -197,3 +197,19 @@ class TestGame(unittest.TestCase):
         self.assertEqual(self.game.player1, 'O')
         self.assertEqual(self.game.player2, 'X')
         self.assertEqual(self.game.current_player, 'O')
+
+    @patch('builtins.input', side_effect=['O'])
+    def test_choose_marker_player1_O(self, mock_input):
+        """Test that choosing O as player1's marker sets player1 to O and player2 to X"""
+        self.game.choose_marker()
+        self.assertEqual(self.game.player1, 'O')
+        self.assertEqual(self.game.player2, 'X')
+        self.assertEqual(self.game.current_player, 'O')
+
+    @patch('builtins.input', side_effect=['A', 'X'])
+    def test_choose_marker_invalid_then_valid(self, mock_input):
+        """Test that choosing an invalid marker then a valid one sets the markers correctly"""
+        self.game.choose_marker()
+        self.assertEqual(self.game.player1, 'X')
+        self.assertEqual(self.game.player2, 'O')
+        self.assertEqual(self.game.current_player, 'X')
