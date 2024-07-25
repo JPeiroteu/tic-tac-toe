@@ -24,27 +24,25 @@ class Game:
                 print("Invalid input. Please enter X or O.")
 
     def input_coordinates(self):
+        """Get valid coordinates from the current player"""
         while True:
             try:
-                x = int(input(f"Player {self.current_player} Coordenate x: "))
-                y = int(input(f"Player {self.current_player} Coordenate y: "))
+                x_coord = int(input(f"Player {self.current_player} Coordinate x: "))
+                y_coord = int(input(f"Player {self.current_player} Coordinate y: "))
 
-                cell = self.board.get_cell(x, y)
+                cell = self.board.get_cell(x_coord, y_coord)
 
-                if cell.marker != " ":
+                if cell is None:
+                    print('Invalid input. Please enter a valid number (0-2).')
+                elif cell.marker != " ":
                     print("Choose another cell!")
-                elif x <= 2 and x >= 0 and y >= 0 and y <= 2:
-                    return x, y
-                    '''
-                    The tuple is accessed in order and immutable
-                    The list is accessed in order and mutable
-                    The dict is accessed by key
-                    '''
+                elif 0 <= x_coord <= 2 and 0 <= y_coord <= 2:
+                    return x_coord, y_coord
                 else:
                     print('Invalid input. Please enter a valid number (0-2).')
-       
+
             except ValueError:
-                print('Invalid input. Please enter a valid number (0-2).')       
+                print('Invalid input. Please enter a valid number (0-2).')
 
     def playing(self):
         coord_x, coord_y = self.input_coordinates()
