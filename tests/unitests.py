@@ -213,3 +213,15 @@ class TestGame(unittest.TestCase):
         self.assertEqual(self.game.player1, 'X')
         self.assertEqual(self.game.player2, 'O')
         self.assertEqual(self.game.current_player, 'X')
+
+    @patch('builtins.input', side_effect=['0', '0'])
+    def test_input_coordinates_valid(self, mock_input):
+        """Test that input_coordinates correctly parses valid coordinates"""
+        x, y = self.game.input_coordinates()
+        self.assertEqual((x, y), (0, 0))
+
+    @patch('builtins.input', side_effect=['3', '3', '0', '0'])
+    def test_input_coordinates_invalid_then_valid(self, mock_input):
+        """Test that input_coordinates handles invalid coordinates and then correctly parses valid ones"""
+        x, y = self.game.input_coordinates()
+        self.assertEqual((x, y), (0, 0))
