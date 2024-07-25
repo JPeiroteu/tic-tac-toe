@@ -1,7 +1,17 @@
+"""
+Game module for the TicTacToe game by terminal
+
+This module contains the Game class, which manages the game flow, including
+choosing markers, getting input coordinates, and handling game play.
+"""
+
 from .board import Board
 
 class Game:
+    """Class representing the TicTacToe game"""
+
     def __init__(self):
+        """Initialize the game with two players and a board"""
         self.player1 = None
         self.player2 = None
         self.current_player = None
@@ -9,9 +19,10 @@ class Game:
         self.board = Board()
 
     def choose_marker(self):
+        """Allow player 1 to choose their marker and set player 2's marker accordingly"""
         while True:
             self.player1 = input("Player1 choose X or O: ").upper()
-            
+
             if self.player1 in ["X", "O"]:
                 if self.player1 == "X":
                     self.player2 = "O"
@@ -20,8 +31,7 @@ class Game:
 
                 self.current_player = self.player1
                 break
-            else:
-                print("Invalid input. Please enter X or O.")
+            print("Invalid input. Please enter X or O.")
 
     def input_coordinates(self):
         """Get valid coordinates from the current player"""
@@ -45,16 +55,14 @@ class Game:
                 print('Invalid input. Please enter a valid number (0-2).')
 
     def playing(self):
+        """Handle the main game playing loop, switching players and checking for winners"""
         coord_x, coord_y = self.input_coordinates()
 
         if self.board.play(coord_x, coord_y, self.current_player):
             self.board.show_board()
-            if self.board.check_winner(): 
+            if self.board.check_winner():
                 self.completed = True
             elif self.board.is_board_full():
                 self.completed = True
 
-        if self.current_player == self.player1:
-            self.current_player = self.player2
-        else:
-            self.current_player = self.player1
+        self.current_player = self.player2 if self.current_player == self.player1 else self.player1
