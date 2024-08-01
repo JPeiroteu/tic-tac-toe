@@ -20,7 +20,7 @@ def get_game(game_id):
     """Retrieve the game with the specified ID"""
     if 0 <= game_id < len(games):
         return games[game_id]
-    
+
 @app.route("/")
 def welcome():
     """Render the welcome page"""
@@ -52,8 +52,7 @@ def current_player(game_id):
     if request.method == 'POST':
         game.current_player = request.form["currentPlayer"]
         return {"success": True}
-    else:
-        return {"currentPlayer": game.current_player}
+    return {"currentPlayer": game.current_player}
 
 @app.route("/game/<int:game_id>/cell/mark", methods=["POST"])
 def post_cell_mark(game_id):
@@ -86,10 +85,9 @@ def check_winner(game_id):
     win_cell, win_cell2, win_cell3 = game.board.check_winner()
     if win_cell:
         return {"win_cell": win_cell, "win_cell2": win_cell2, "win_cell3": win_cell3}
-    elif game.board.is_board_full():
+    if game.board.is_board_full():
         return {"winner": "Tie"}
-    else:
-        return {"winner": None}
+    return {"winner": None}
 
 @app.route("/game/<int:game_id>/reset_board", methods=["POST"])
 def reset_board(game_id):
