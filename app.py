@@ -10,6 +10,7 @@ from tictactoe.board import Board
 app = Flask(__name__)
 
 class Game:
+    """Represents a Tic Tac Toe game with a board and the current player"""
     def __init__(self):
         self.board = Board()
         self.current_player = "X"
@@ -28,7 +29,6 @@ def welcome():
 
 @app.route("/new_game", methods=["POST"])
 def new_game():
-    global games
     """Add new game to the pool and return its ID"""
     games.append(Game())
     return {"game_id": len(games) - 1}
