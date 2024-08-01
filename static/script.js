@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
     playButton.addEventListener("click", async function() {
         const response = await fetch("/new_game", { method: "POST" });
         const data = await response.json();
-        currentGameId = data.id;
+        currentGameId = data.game_id;
         gameIdInput.value = currentGameId;
         initializeGame();
     });
