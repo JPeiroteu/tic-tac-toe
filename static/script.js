@@ -1,125 +1,134 @@
 
 document.addEventListener("DOMContentLoaded", function() {
     const playButton = document.getElementById("playButton");
+    const joinButton = document.getElementById("joinButton");
+    const resetButton = document.getElementById("resetButton");
     const pageTitle = document.getElementById("pageTitle");
     const turnMessage = document.getElementById("turnMessage");
     const board = document.getElementById("board");
+    const gameIdInput = document.getElementById("gameIdInput");
 
     pageTitle.style.display = "block";
     turnMessage.style.display = "none";
     board.style.display = "none";
     resetButton.style.display = "none";
-    setInterval(updateBoard, 1000);
-    setInterval(function() {
-        getCurrentPlayer(updateTurnMessage);
-    }, 1000);
-    setInterval(checkWinner, 1000);
-
 
     let currentPlayer;
+    let currentGameId = null;
 
-    playButton.addEventListener("click", function() {
-        playButton.style.display = "none";
-        turnMessage.style.display = "block";
-        board.style.display = "grid";
-        resetButton.style.display = "block";
+    playButton.addEventListener("click", async function() {
+        const response = await fetch("/new_game", { method: "POST" });
+        const data = await response.json();
+        currentGameId = data.id;
+        gameIdInput.value = currentGameId;
+        initializeGame();
+    });
 
-        getCurrentPlayer(updateTurnMessage);
-        updateBoard();
-        checkWinner();
+    joinButton.addEventListener("click", function() {
+        const gameId = parseInt(gameIdInput.value, 10);
+        if (!isNaN(gameId)) {
+            currentGameId = gameId;
+            initializeGame();
+        } else {
+            alert("Invalid Game ID");
+        }
+    });
+
+    resetButton.addEventListener("click", async function() {
+        if (currentGameId !== null) {
+            await fetch(`/game/${currentGameId}/reset_board`, { method: "POST" });
+            updateBoard();
+        }
     });
 
     board.addEventListener("click", function(event) {
-        if (event.target.classList.contains("cell")) {
-            const [x, y] = event.target.id.split('-').slice(1);
+        if (event.target.classList.contains("cell") && currentGameId !== null) {
+            const [x, y] = event.target.id.split('-').slice(1).map(Number);
             makeMove(x, y, currentPlayer, event);
         }
     });
 
-    function getCurrentPlayer(callback) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "/player/current", true);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const data = JSON.parse(xhr.responseText);
-                currentPlayer = data.currentPlayer;
-                callback();
-            }
-        };
-        xhr.send();
+    function initializeGame() {
+        playButton.style.display = "none";
+        joinButton.style.display = "none";
+        turnMessage.style.display = "block";
+        board.style.display = "grid";
+        resetButton.style.display = "block";
+        
+        updateBoard();
+        getCurrentPlayer(updateTurnMessage);
+        setInterval(updateBoard, 1000);
+        setInterval(() => getCurrentPlayer(updateTurnMessage), 1000);
+        setInterval(checkWinner, 1000);
     }
-    
+
+    function getCurrentPlayer(callback) {
+        if (currentGameId !== null) {
+            fetch(`/game/${currentGameId}/player/current`)
+                .then(response => response.json())
+                .then(data => {
+                    currentPlayer = data.currentPlayer;
+                    callback();
+                });
+        }
+    }
+
     function makeMove(x, y, player, event) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "/cell/mark", true);
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const data = JSON.parse(xhr.responseText);
-                event.target.textContent = data.result; 
+        fetch(`/game/${currentGameId}/cell/mark`, {
+            method: "POST",
+            headers: {
+                "Content-type": "application/x-www-form-urlencoded"
+            },
+            body: `x=${x}&y=${y}&mark=${player}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                event.target.textContent = data.marker;
                 getCurrentPlayer(updateTurnMessage);
                 updateBoard();
                 checkWinner();
             }
-        };
-        xhr.send(`x=${x}&y=${y}&mark=${player}`);
-    }    
+        });
+    }
 
     function updateBoard() {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "/board", true);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const data = JSON.parse(xhr.responseText);
-                data.grid.forEach(function(cell) {
-                    const cellElement = document.getElementById(`cell-${cell.x}-${cell.y}`);
-                    cellElement.textContent = cell.marker;
-                    cellElement.dataset.marker = cell.marker;
+        if (currentGameId !== null) {
+            fetch(`/game/${currentGameId}/board`)
+                .then(response => response.json())
+                .then(data => {
+                    data.grid.forEach(cell => {
+                        const cellElement = document.getElementById(`cell-${cell.x}-${cell.y}`);
+                        cellElement.textContent = cell.marker;
+                        cellElement.dataset.marker = cell.marker;
+                        if (cell.marker !== " ") {
+                            cellElement.classList.add(cell.marker === "X" ? "cell-x" : "cell-o");
+                        } else {
+                            cellElement.classList.remove("cell-x", "cell-o");
+                        }
+                    });
                 });
-            }
-        };
-        xhr.send();
+        }
     }
 
     function updateTurnMessage() {
-        turnMessage.textContent = currentPlayer + "'s turn";
+        turnMessage.textContent = currentPlayer ? `${currentPlayer}'s turn` : "";
     }
 
-    // Function to check for a winner
     function checkWinner() {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "/check_winner", true);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const winnerData = JSON.parse(xhr.responseText);
-                if (winnerData.win_cell.marker) {
-                    const winnerMarker = winnerData.win_cell.marker;
-                    turnMessage.textContent = winnerMarker + " wins!";
-                } else if (winnerData.draw) {
-                    turnMessage.textContent = "It's a draw!";
-                }
-            }
-        };
-        xhr.send();
-    }
-    
-
-    resetButton.addEventListener("click", function() {
-        resetButton.style.display = "none";
-        turnMessage.innerText = "";
-        resetBoard();
-    });
-
-    // Function to reset the board
-    function resetBoard() {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "/reset_board", true);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                updateBoard();
-            }
-        };
-        xhr.send();
-        location.reload();
+        if (currentGameId !== null) {
+            fetch(`/game/${currentGameId}/check_winner`)
+                .then(response => response.json())
+                .then(winnerData => {
+                    if (winnerData.win_cell) {
+                        const winnerMarker = winnerData.win_cell.marker;
+                        turnMessage.textContent = `${winnerMarker} wins!`;
+                    } else if (winnerData.winner === "Tie") {
+                        turnMessage.textContent = "It's a tie!";
+                    }
+                });
+        }
     }
 });
