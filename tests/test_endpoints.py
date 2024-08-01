@@ -22,7 +22,7 @@ class TestApp(unittest.TestCase):
     def test_check_x_o_mark_on_board(self):
         """Test marking X and O on the board"""
         response = self.app.post('/new_game')
-        game_id = response.json['id']
+        game_id = response.json['game_id']
 
         response = self.app.post(f'/game/{game_id}/cell/mark', data={'x': 0, 'y': 0, 'mark': 'X'})
         self.assertEqual(response.json, {'marker': 'X', 'x': 0, 'y': 0})
@@ -33,7 +33,7 @@ class TestApp(unittest.TestCase):
     def test_check_overlapping_marks(self):
         """Test marking an already marked cell"""
         response = self.app.post('/new_game')
-        game_id = response.json['id']
+        game_id = response.json['game_id']
 
         self.app.post(f'/game/{game_id}/cell/mark', data={'x': 1, 'y': 1, 'mark': 'X'})
         
@@ -43,7 +43,7 @@ class TestApp(unittest.TestCase):
     def test_current_player(self):
         """Test getting the current player"""
         response = self.app.post('/new_game')
-        game_id = response.json['id']
+        game_id = response.json['game_id']
 
         response = self.app.get(f'/game/{game_id}/player/current')
         self.assertEqual(response.json, {'currentPlayer': 'X'})
@@ -51,7 +51,7 @@ class TestApp(unittest.TestCase):
     def test_check_winner(self):
         """Test checking for a winner"""
         response = self.app.post('/new_game')
-        game_id = response.json['id']
+        game_id = response.json['game_id']
 
         self.app.post(f'/game/{game_id}/cell/mark', data={'x': 2, 'y': 0, 'mark': 'X'})
         self.app.post(f'/game/{game_id}/cell/mark', data={'x': 2, 'y': 1, 'mark': 'X'})
