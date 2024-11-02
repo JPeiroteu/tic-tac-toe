@@ -39,15 +39,15 @@ class Board:
         return self.get_cell(x_coord, y_coord).marker
 
     def play(self, x_coord, y_coord, marker):
-        """Place a marker on the board if it's a valid move."""
+        """Place a marker on the specified cell."""
         cell = self.get_cell(x_coord, y_coord)
 
-        if marker == "X" or marker == "O":
+        if marker in ("X", "O"):
             cell.mark(marker)
             return True
-        else:
-            print("Invalid marker!")
-            return False
+
+        print("Invalid marker!")
+        return False
 
     def check_winner(self):
         """Check for a winning combination on the board."""
