@@ -17,8 +17,8 @@ class TestCell(unittest.TestCase):
     def test_initialize_valid(self):
         """Test that the Cell class initializes correctly with valid inputs"""
         cell = Cell(1, 2)
-        self.assertEqual(cell.x, 1)
-        self.assertEqual(cell.y, 2)
+        self.assertEqual(cell.x_coord, 1)
+        self.assertEqual(cell.y_coord, 2)
         self.assertEqual(cell.marker, " ")
 
     def test_initialize_invalid(self):
@@ -72,9 +72,9 @@ class TestCell(unittest.TestCase):
     def test_to_dict(self):
         """Test that the to_dict method returns the correct dictionary representation of the cell"""
         cell = Cell(1, 2)
-        self.assertEqual(cell.to_dict(), {"x": 1, "y": 2, "marker": " "})
+        self.assertEqual(cell.to_dict(), {"x_coord": 1, "y_coord": 2, "marker": " "})
         cell.mark("X")
-        self.assertEqual(cell.to_dict(), {"x": 1, "y": 2, "marker": "X"})
+        self.assertEqual(cell.to_dict(), {"x_coord": 1, "y_coord": 2, "marker": "X"})
 
 class TestBoard(unittest.TestCase):
     """Tests for the Board class in the TicTacToe game"""
@@ -93,8 +93,8 @@ class TestBoard(unittest.TestCase):
     def test_get_cell(self):
         """Test that get_cell method returns the correct cell"""
         cell = self.board.get_cell(0, 0)
-        self.assertEqual(cell.x, 0)
-        self.assertEqual(cell.y, 0)
+        self.assertEqual(cell.x_coord, 0)
+        self.assertEqual(cell.y_coord, 0)
         self.assertEqual(cell.marker, " ")
 
     def test_get_cell_invalid(self):
@@ -158,9 +158,9 @@ class TestBoard(unittest.TestCase):
 
     def test_is_board_full(self):
         """Test that is_board_full method correctly identifies a fully occupied board"""
-        for x in range(3):
-            for y in range(3):
-                self.board.play(x, y, "X")
+        for x_coord in range(3):
+            for y_coord in range(3):
+                self.board.play(x_coord, y_coord, "X")
         self.assertTrue(self.board.is_board_full())
 
     def test_reset(self):
