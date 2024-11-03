@@ -7,14 +7,14 @@ Defines the Cell class used for each cell in the Tic-Tac-Toe game board.
 class Cell:
     """Represents a single cell in the Tic-Tac-Toe game board."""
 
-    def __init__(self, x, y):
+    def __init__(self, x_coord, y_coord):
         """Initialize a Cell instance with coordinates (x, y) and an empty marker."""
-        if not isinstance(x, int) or not isinstance(y, int):
+        if not isinstance(x_coord, int) or not isinstance(y_coord, int):
             raise TypeError("x and y must be integers.")
-        self.x = x
-        self.y = y
+        self.x_coord = x_coord
+        self.y_coord = y_coord
         self.marker = " "
-        
+    
     def is_empty(self):
         """Check if the cell is empty."""
         return self.marker == " "
@@ -30,7 +30,7 @@ class Cell:
     def to_dict(self):
         """Convert the cell's properties to a dictionary format."""
         return {
-            "x": self.x,
-            "y": self.y,
+            "x_coord": self.x_coord,
+            "y_coord": self.y_coord,
             "marker": self.marker
         }

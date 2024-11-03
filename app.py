@@ -58,8 +58,8 @@ def current_player(game_id):
 def post_cell_mark(game_id):
     """Mark a cell on the board"""
     try:
-        x_coord = int(request.form["x"])
-        y_coord = int(request.form["y"])
+        x_coord = int(request.form["x_coord"])
+        y_coord = int(request.form["y_coord"])
         mark = request.form["mark"]
         if not (0 <= x_coord <= 2 and 0 <= y_coord <= 2):
             raise ValueError("Invalid input. Please enter a valid number (0-2).")

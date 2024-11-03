@@ -30,7 +30,7 @@ class Board:
     def get_cell(self, x_coord, y_coord):
         """Return the cell at the specified coordinates."""
         for cell in self.grid:
-            if cell.x == x_coord and cell.y == y_coord:
+            if cell.x_coord == x_coord and cell.y_coord == y_coord:
                 return cell
         return None
 
