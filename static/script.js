@@ -43,8 +43,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     board.addEventListener("click", function(event) {
         if (event.target.classList.contains("cell") && currentGameId !== null) {
-            const [x, y] = event.target.id.split('-').slice(1).map(Number);
-            makeMove(x, y, currentPlayer, event);
+            const [x_coord, y_coord] = event.target.id.split('-').slice(1).map(Number);
+            makeMove(x_coord, y_coord, currentPlayer, event);
         }
     });
 
@@ -73,13 +73,13 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    function makeMove(x, y, player, event) {
+    function makeMove(x_coord, y_coord, player, event) {
         fetch(`/game/${currentGameId}/cell/mark`, {
             method: "POST",
             headers: {
                 "Content-type": "application/x-www-form-urlencoded"
             },
-            body: `x=${x}&y=${y}&mark=${player}`
+            body: `x_coord=${x_coord}&y_coord=${y_coord}&mark=${player}`
         })
         .then(response => response.json())
         .then(data => {
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 .then(response => response.json())
                 .then(data => {
                     data.grid.forEach(cell => {
-                        const cellElement = document.getElementById(`cell-${cell.x}-${cell.y}`);
+                        const cellElement = document.getElementById(`cell-${cell.x_coord}-${cell.y_coord}`);
                         cellElement.textContent = cell.marker;
                         cellElement.dataset.marker = cell.marker;
                         if (cell.marker !== " ") {
