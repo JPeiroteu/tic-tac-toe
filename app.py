@@ -5,6 +5,7 @@ This module provides the routes and handlers for a Tic Tac Toe game using Flask.
 """
 
 from flask import Flask, render_template, request
+from datetime import datetime, timedelta
 from tictactoe.board import Board
 
 app = Flask(__name__)
@@ -14,14 +15,37 @@ class Game:
     def __init__(self):
         self.board = Board()
         self.current_player = "X"
-        self.allowed_ips = set()
+        self.allowed_ips = {}
+        self.inactivity_threshold = timedelta(minutes=1)
+
+    def reset_ips(self):
+        """Clear all IPs from allowed_ips to allow new players to join"""
+        self.allowed_ips.clear()
+
+    def update_activity(self, ip):
+        """Update the activity timestamp for a specific IP"""
+        self.allowed_ips[ip] = datetime.now()
+        
+    def clear_inactive_ips(self):
+        """Remove IPs that have been inactive for more than 1 min"""
+        now = datetime.now()
+        inactive_ips = []
+
+        for ip, last_active in self.allowed_ips.items():
+            if now - last_active > self.inactivity_threshold:
+                inactive_ips.append(ip)
+
+        for ip in inactive_ips:
+            del self.allowed_ips[ip]
 
 games = []
 
 def get_game(game_id):
     """Retrieve the game with the specified ID"""
     if 0 <= game_id < len(games):
-        return games[game_id]
+        game = games[game_id]
+        game.clear_inactive_ips() 
+        return game
     return None
 
 def get_client_ip():
@@ -35,7 +59,7 @@ def is_ip_allowed(game, ip):
     if ip not in game.allowed_ips:
         if len(game.allowed_ips) >= 2:
             return False  
-        game.allowed_ips.add(ip) 
+        game.allowed_ips[ip] = datetime.now()  
     return True
 
 @app.route("/")
@@ -57,9 +81,12 @@ def get_board(game_id):
         return {"error": "Game not found"}, 404
 
     client_ip = get_client_ip()
+    game.clear_inactive_ips()  
+
     if not is_ip_allowed(game, client_ip):
         return {"error": "Game full. Only 2 players allowed."}, 403
 
+    game.update_activity(client_ip)
     return {"grid": game.board.to_dict()}
 
 @app.route("/game/<int:game_id>/player/current", methods=['GET', 'POST'])
@@ -70,11 +97,14 @@ def current_player(game_id):
         return {"error": "Game not found"}, 404
 
     client_ip = get_client_ip()
+    game.clear_inactive_ips()
+
     if not is_ip_allowed(game, client_ip):
         return {"error": "Game full. Only 2 players allowed."}, 403
 
     if request.method == 'POST':
         game.current_player = request.form["currentPlayer"]
+        game.update_activity(client_ip)
         return {"success": True}
     return {"currentPlayer": game.current_player}
 
@@ -86,8 +116,12 @@ def post_cell_mark(game_id):
         return {"error": "Game not found"}, 404
 
     client_ip = get_client_ip()
+    game.clear_inactive_ips()
+
     if not is_ip_allowed(game, client_ip):
         return {"error": "Game full. Only 2 players allowed."}, 403
+
+    game.update_activity(client_ip)
 
     try:
         x_coord = int(request.form["x_coord"])
@@ -117,8 +151,12 @@ def check_winner(game_id):
         return {"error": "Game not found"}, 404
 
     client_ip = get_client_ip()
+    game.clear_inactive_ips()
+
     if not is_ip_allowed(game, client_ip):
         return {"error": "Game full. Only 2 players allowed."}, 403
+
+    game.update_activity(client_ip)
 
     win_cell, win_cell2, win_cell3 = game.board.check_winner()
     if win_cell:
@@ -135,11 +173,15 @@ def reset_board(game_id):
         return {"error": "Game not found"}, 404
 
     client_ip = get_client_ip()
+    game.clear_inactive_ips()
+
     if not is_ip_allowed(game, client_ip):
         return {"error": "Game full. Only 2 players allowed."}, 403
 
-    game.board.reset()
+    game.update_activity(client_ip)
+    game.board.reset()  
+
     return {"success": True}
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8000, debug=True) # mac port 8000, server 5000
+    app.run(host='0.0.0.0', port=8000, debug=True)  # mac port 8000, server 5000
