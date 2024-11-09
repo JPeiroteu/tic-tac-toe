@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", function() {
     const playButton = document.getElementById("playButton");
     const joinButton = document.getElementById("joinButton");
@@ -15,6 +14,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
     let currentPlayer;
     let currentGameId = null;
+    let inactivityTimeout; 
+    const inactivityDuration = 60000; 
+
+    function resetInactivityTimeout() {
+        clearTimeout(inactivityTimeout);
+        inactivityTimeout = setTimeout(() => location.reload(), inactivityDuration);
+    }
+
+    document.addEventListener("mousemove", resetInactivityTimeout);
+
+    resetInactivityTimeout();
 
     playButton.addEventListener("click", async function() {
         const response = await fetch("/new_game", { method: "POST" });
@@ -48,18 +58,32 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    function initializeGame() {
-        playButton.style.display = "none";
-        joinButton.style.display = "none";
-        turnMessage.style.display = "block";
-        board.style.display = "grid";
-        resetButton.style.display = "block";
-        
-        updateBoard();
-        getCurrentPlayer(updateTurnMessage);
-        setInterval(updateBoard, 1000);
-        setInterval(() => getCurrentPlayer(updateTurnMessage), 1000);
-        setInterval(checkWinner, 1000);
+    async function initializeGame() {
+        const gameId = parseInt(gameIdInput.value, 10);
+        try {
+            const response = await fetch(`/game/${gameId}/board`);
+            const data = await response.json();
+    
+            if (data.error) {
+                alert(data.error);
+                return; 
+            }
+    
+            playButton.style.display = "none";
+            joinButton.style.display = "none";
+            turnMessage.style.display = "block";
+            board.style.display = "grid";
+            resetButton.style.display = "block";
+            
+            updateBoard();
+            getCurrentPlayer(updateTurnMessage);
+            setInterval(updateBoard, 1000);
+            setInterval(() => getCurrentPlayer(updateTurnMessage), 1000);
+            setInterval(checkWinner, 1000);
+        } catch (error) {
+            alert("Error while connecting to the game. Please try again.");
+            console.error(error);
+        }
     }
 
     function getCurrentPlayer(callback) {
