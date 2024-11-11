@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Press Start 2P';
+    src: url('/static/fonts/PressStart2P-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     display: flex;
     justify-content: center;
