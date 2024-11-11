@@ -4,8 +4,8 @@ Tic Tac Toe Flask Application
 This module provides the routes and handlers for a Tic Tac Toe game using Flask.
 """
 
-from flask import Flask, render_template, request
 from datetime import datetime, timedelta
+from flask import Flask, render_template, request
 from tictactoe.board import Board
 
 app = Flask(__name__)
@@ -25,7 +25,7 @@ class Game:
     def update_activity(self, ip):
         """Update the activity timestamp for a specific IP"""
         self.allowed_ips[ip] = datetime.now()
-        
+
     def clear_inactive_ips(self):
         """Remove IPs that have been inactive for more than 1 min"""
         now = datetime.now()
@@ -44,7 +44,7 @@ def get_game(game_id):
     """Retrieve the game with the specified ID"""
     if 0 <= game_id < len(games):
         game = games[game_id]
-        game.clear_inactive_ips() 
+        game.clear_inactive_ips()
         return game
     return None
 
@@ -58,9 +58,36 @@ def is_ip_allowed(game, ip):
     """Check if an IP is allowed in the game, and add if within limit"""
     if ip not in game.allowed_ips:
         if len(game.allowed_ips) >= 2:
-            return False  
-        game.allowed_ips[ip] = datetime.now()  
+            return False
+        game.allowed_ips[ip] = datetime.now()
     return True
+
+@app.after_request
+def add_security_headers(response):
+    """Add security headers to the App"""
+    # Content Security Policy (CSP)
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self'; "
+        "img-src 'self' data:; "
+        "font-src 'self';"
+        "object-src 'none'; "
+        "frame-ancestors 'none';"
+        "base-uri 'self';"
+        "form-action 'self';"
+    )
+
+    # Prevent Clickjacking
+    response.headers["X-Frame-Options"] = "DENY"
+
+    # Prevent content type sniffing
+    response.headers["X-Content-Type-Options"] = "nosniff"
+
+    # Basic XSS protection for older browsers
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+
+    return response
 
 @app.route("/")
 def welcome():
@@ -81,7 +108,7 @@ def get_board(game_id):
         return {"error": "Game not found"}, 404
 
     client_ip = get_client_ip()
-    game.clear_inactive_ips()  
+    game.clear_inactive_ips()
 
     if not is_ip_allowed(game, client_ip):
         return {"error": "Game full. Only 2 players allowed."}, 403
@@ -179,7 +206,7 @@ def reset_board(game_id):
         return {"error": "Game full. Only 2 players allowed."}, 403
 
     game.update_activity(client_ip)
-    game.board.reset()  
+    game.board.reset()
 
     return {"success": True}
 
