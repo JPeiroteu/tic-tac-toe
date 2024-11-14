@@ -16,22 +16,30 @@ class TestApp(unittest.TestCase):
         self.app = app.test_client()
         self.app.testing = True
 
-        global games
-        games = []
+    def test_new_game_with_generated_id(self):
+        """Test creating a new game without specifying an ID"""
+        response = self.app.post('/new_game')
+        game_id = response.json['game_id']
+        self.assertIn(game_id, games)
+
+    def test_new_game_with_specific_id(self):
+        """Test creating a new game with a specific game ID"""
+        response = self.app.post('/new_game/123')
+        game_id = response.json['game_id']
+        self.assertEqual(game_id, 123)
+        self.assertIn(123, games)
 
     def test_check_x_o_mark_on_board(self):
         """Test marking X and O on the board"""
         response = self.app.post('/new_game')
         game_id = response.json['game_id']
 
-        # Simulate IP Player 1
+        # Simulate IP Players
         with self.app as client:
             client.environ_base['REMOTE_ADDR'] = '192.168.1.1'
             response = client.post(f'/game/{game_id}/cell/mark', data={'x_coord': 0, 'y_coord': 0, 'mark': 'X'})
             self.assertEqual(response.json, {'marker': 'X', 'x_coord': 0, 'y_coord': 0})
 
-        # Simulate IP Player 2
-        with self.app as client:
             client.environ_base['REMOTE_ADDR'] = '192.168.1.2'
             response = client.post(f'/game/{game_id}/cell/mark', data={'x_coord': 0, 'y_coord': 1, 'mark': 'O'})
             self.assertEqual(response.json, {'marker': 'O', 'x_coord': 0, 'y_coord': 1})
@@ -41,18 +49,14 @@ class TestApp(unittest.TestCase):
         response = self.app.post('/new_game')
         game_id = response.json['game_id']
 
-        # Simulate IP Player 1
+        # Simulate IP 3 Players
         with self.app as client:
             client.environ_base['REMOTE_ADDR'] = '192.168.1.1'
             self.app.post(f'/game/{game_id}/cell/mark', data={'x_coord': 0, 'y_coord': 0, 'mark': 'X'})
-        
-        # Simulate IP Player 2
-        with self.app as client:
+
             client.environ_base['REMOTE_ADDR'] = '192.168.1.2'
             self.app.post(f'/game/{game_id}/cell/mark', data={'x_coord': 0, 'y_coord': 1, 'mark': 'O'})
-        
-        # Simulate IP Player 3
-        with self.app as client:
+
             client.environ_base['REMOTE_ADDR'] = '192.168.1.3'
             response = client.get(f'/game/{game_id}/board')
             self.assertEqual(response.json['error'], 'Game full. Only 2 players allowed.')
@@ -63,7 +67,6 @@ class TestApp(unittest.TestCase):
         game_id = response.json['game_id']
 
         self.app.post(f'/game/{game_id}/cell/mark', data={'x_coord': 1, 'y_coord': 1, 'mark': 'X'})
-        
         response = self.app.post(f'/game/{game_id}/cell/mark', data={'x_coord': 1, 'y_coord': 1, 'mark': 'O'})
         self.assertEqual(response.json['error'], 'Choose another cell!')
 
