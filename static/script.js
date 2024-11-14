@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+    const boardButton = document.getElementById("boardButton");
     const playButton = document.getElementById("playButton");
-    const joinButton = document.getElementById("joinButton");
     const resetButton = document.getElementById("resetButton");
     const pageTitle = document.getElementById("pageTitle");
     const turnMessage = document.getElementById("turnMessage");
@@ -26,24 +26,44 @@ document.addEventListener("DOMContentLoaded", function() {
 
     resetInactivityTimeout();
 
-    playButton.addEventListener("click", async function() {
-        const response = await fetch("/new_game", { method: "POST" });
-        const data = await response.json();
-        currentGameId = data.game_id;
-        gameIdInput.value = currentGameId;
-        initializeGame();
-    });
-
-    joinButton.addEventListener("click", function() {
-        const gameId = parseInt(gameIdInput.value, 10);
-        if (!isNaN(gameId)) {
-            currentGameId = gameId;
-            initializeGame();
+    boardButton.addEventListener("click", async function() {
+        const gameId = 0;
+        currentGameId = gameId;
+        if (initializeGame()) {
+            return true;
         } else {
-            alert("Invalid Game ID");
+            return alert("Physical Board is Offline");
         }
     });
-
+    
+    playButton.addEventListener("click", async function() {
+        const gameIdInputValue = gameIdInput.value;
+        
+        if (gameIdInputValue) {
+            const gameId = parseInt(gameIdInputValue, 10);
+            if (!isNaN(gameId)) {
+                currentGameId = gameId;
+                initializeGame();
+            } else {
+                return alert("Invalid Game ID");
+            }
+        } else {
+            try {
+                const response = await fetch("/new_game", { method: "POST" });
+                if (response.ok) {
+                    const data = await response.json();
+                    currentGameId = data.game_id;
+                    gameIdInput.value = currentGameId;
+                    initializeGame();
+                } else {
+                    alert("Failed to create a new game");
+                }
+            } catch (error) {
+                alert("Error connecting to the server");
+            }
+        }
+    });
+    
     resetButton.addEventListener("click", async function() {
         if (currentGameId !== null) {
             await fetch(`/game/${currentGameId}/reset_board`, { method: "POST" });
@@ -69,8 +89,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 return; 
             }
     
+            boardButton.style.display = "none";
             playButton.style.display = "none";
-            joinButton.style.display = "none";
             turnMessage.style.display = "block";
             board.style.display = "grid";
             resetButton.style.display = "block";
