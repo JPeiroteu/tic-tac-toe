@@ -7,6 +7,7 @@ This module provides the routes and handlers for a Tic Tac Toe game using Flask.
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request
 from tictactoe.board import Board
+import random
 
 app = Flask(__name__)
 
@@ -38,15 +39,23 @@ class Game:
         for ip in inactive_ips:
             del self.allowed_ips[ip]
 
-games = []
+games = {}
 
 def get_game(game_id):
     """Retrieve the game with the specified ID"""
-    if 0 <= game_id < len(games):
-        game = games[game_id]
-        game.clear_inactive_ips()
+    game = games.get(game_id)  # Use get() to retrieve the game by its ID from the dictionary
+    if game:
+        game.clear_inactive_ips()  # Clear inactive IPs for the game
         return game
     return None
+
+def generate_game_id():
+    """Generate a unique game ID"""
+    while True:
+        game_id = random.randint(100, 999) 
+        if game_id not in games:
+            return game_id
+
 
 def get_client_ip():
     """Get the client's IP address"""
@@ -97,8 +106,9 @@ def welcome():
 @app.route("/new_game", methods=["POST"])
 def new_game():
     """Add new game to the pool and return its ID"""
-    games.append(Game())
-    return {"game_id": len(games) - 1}
+    game_id = generate_game_id()
+    games[game_id] = Game() 
+    return {"game_id": game_id}
 
 @app.route("/game/<int:game_id>/board")
 def get_board(game_id):
