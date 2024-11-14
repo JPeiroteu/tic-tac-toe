@@ -52,7 +52,7 @@ def get_game(game_id):
 def generate_game_id():
     """Generate a unique game ID"""
     while True:
-        game_id = random.randint(100, 999) 
+        game_id = random.randint(100, 999)
         if game_id not in games:
             return game_id
 
@@ -103,11 +103,17 @@ def welcome():
     """Render the welcome page"""
     return render_template("index.html")
 
-@app.route("/new_game", methods=["POST"])
-def new_game():
-    """Add new game to the pool and return its ID"""
-    game_id = generate_game_id()
-    games[game_id] = Game() 
+@app.route("/new_game", defaults={'game_id': None}, methods=["POST"])
+@app.route("/new_game/<int:game_id>", methods=["POST"]) # Uses provided game ID from physical board
+def new_game(game_id):
+    """Creates new game with random ID or uses the provided ID for physical board (when online)"""
+    if game_id is None:
+        game_id = generate_game_id()
+
+    if game_id in games:
+        return {"error": "Game ID already exists."}, 400
+
+    games[game_id] = Game()
     return {"game_id": game_id}
 
 @app.route("/game/<int:game_id>/board")
