@@ -92,7 +92,7 @@ button:hover {
 
 #gameIdInput {
     padding: 8px;
-    font-size: 16px;
+    font-size: 17px;
     border: 1px solid #333;
     border-radius: 5px;
     color: #000;
@@ -102,7 +102,7 @@ button:hover {
 
 
 
-#joinButton {
+#playButton {
     padding: 10px 16px;
     font-size: 16px;
     cursor: pointer;
@@ -117,7 +117,7 @@ button:hover {
     transition: background-color 0.3s;
 }
 
-#joinButton:hover {
+#playButton:hover {
     background-color: #1976D2;
 }
 
