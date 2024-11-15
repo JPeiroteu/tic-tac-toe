@@ -96,11 +96,9 @@ button:hover {
     border: 1px solid #333;
     border-radius: 5px;
     color: #000;
-    width: 63px;
+    width: 63px; /* Mantendo o tamanho fixo como estava antes */
     box-sizing: border-box;
 }
-
-
 
 #playButton {
     padding: 10px 16px;
@@ -134,8 +132,16 @@ button:hover {
     }
 
     button {
-        padding: 8px 16px;
         font-size: 14px;
+    }
+
+    #playButton{
+        padding: 10px 10px;
+        font-size: 14px;
+    }
+
+    #gameIdInput{
+        font-size: 15px;
     }
 
     #turnMessage, #resultMessage {

@@ -19,10 +19,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function resetInactivityTimeout() {
         clearTimeout(inactivityTimeout);
-        inactivityTimeout = setTimeout(() => location.reload(), inactivityDuration);
+        inactivityTimeout = setTimeout(() => {
+            if (currentGameId !== null) {
+                location.reload(); // Refresh only if a game is active
+            }
+        }, inactivityDuration);
     }
 
-    document.addEventListener("mousemove", resetInactivityTimeout);
+    document.addEventListener("click", resetInactivityTimeout);
 
     resetInactivityTimeout();
 
