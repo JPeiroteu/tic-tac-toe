@@ -17,37 +17,26 @@ class Game:
         self.board = Board()
         self.current_player = "X"
         self.allowed_ips = {}
-        self.inactivity_threshold = timedelta(minutes=1)
+        self.last_activity = datetime.now()
+        self.inactivity_threshold = timedelta(minutes=2)
 
-    def reset_ips(self):
-        """Clear all IPs from allowed_ips to allow new players to join"""
-        self.allowed_ips.clear()
+    def update_activity(self):
+        """Update the last activity timestamp for the game"""
+        self.last_activity = datetime.now()
 
-    def update_activity(self, ip):
-        """Update the activity timestamp for a specific IP"""
-        self.allowed_ips[ip] = datetime.now()
-
-    def clear_inactive_ips(self):
-        """Remove IPs that have been inactive for more than 1 min"""
-        now = datetime.now()
-        inactive_ips = []
-
-        for ip, last_active in self.allowed_ips.items():
-            if now - last_active > self.inactivity_threshold:
-                inactive_ips.append(ip)
-
-        for ip in inactive_ips:
-            del self.allowed_ips[ip]
+    def is_inactive(self):
+        """Check if the game has been inactive beyond the threshold"""
+        return datetime.now() - self.last_activity > self.inactivity_threshold
 
 games = {}
 
 def get_game(game_id):
-    """Retrieve the game with the specified ID"""
-    game = games.get(game_id)  # Use get() to retrieve the game by its ID from the dictionary
-    if game:
-        game.clear_inactive_ips()  # Clear inactive IPs for the game
-        return game
-    return None
+    """Retrieve the game with the specified ID and deleting if inactive"""
+    game = games.get(game_id)
+    if game and game.is_inactive():
+        del games[game_id]
+        return None
+    return game
 
 def generate_game_id():
     """Generate a unique game ID"""
@@ -55,7 +44,6 @@ def generate_game_id():
         game_id = random.randint(100, 999)
         if game_id not in games:
             return game_id
-
 
 def get_client_ip():
     """Get the client's IP address"""
@@ -68,7 +56,7 @@ def is_ip_allowed(game, ip):
     if ip not in game.allowed_ips:
         if len(game.allowed_ips) >= 2:
             return False
-        game.allowed_ips[ip] = datetime.now()
+        game.allowed_ips[ip] = True
     return True
 
 @app.after_request
@@ -118,36 +106,31 @@ def new_game(game_id):
 
 @app.route("/game/<int:game_id>/board")
 def get_board(game_id):
-    """Get the current state of the board if the player's IP is allowed"""
+    """Get the current state of the board or deleting game if inactive"""
     game = get_game(game_id)
     if not game:
-        return {"error": "Game not found"}, 404
+        return {"error": "Game deleted due to inactivity"}, 410
 
     client_ip = get_client_ip()
-    game.clear_inactive_ips()
-
     if not is_ip_allowed(game, client_ip):
         return {"error": "Game full. Only 2 players allowed."}, 403
 
-    game.update_activity(client_ip)
     return {"grid": game.board.to_dict()}
 
 @app.route("/game/<int:game_id>/player/current", methods=['GET', 'POST'])
 def current_player(game_id):
-    """Get or set the current player if IP is allowed"""
+    """Get or set the current player"""
     game = get_game(game_id)
     if not game:
-        return {"error": "Game not found"}, 404
+        return {"error": "Game deleted due to inactivity"}, 410
 
     client_ip = get_client_ip()
-    game.clear_inactive_ips()
-
     if not is_ip_allowed(game, client_ip):
         return {"error": "Game full. Only 2 players allowed."}, 403
 
     if request.method == 'POST':
         game.current_player = request.form["currentPlayer"]
-        game.update_activity(client_ip)
+        game.update_activity()
         return {"success": True}
     return {"currentPlayer": game.current_player}
 
@@ -156,15 +139,13 @@ def post_cell_mark(game_id):
     """Mark a cell on the board"""
     game = get_game(game_id)
     if not game:
-        return {"error": "Game not found"}, 404
+        return {"error": "Game deleted due to inactivity"}, 410
 
     client_ip = get_client_ip()
-    game.clear_inactive_ips()
-
     if not is_ip_allowed(game, client_ip):
         return {"error": "Game full. Only 2 players allowed."}, 403
 
-    game.update_activity(client_ip)
+    game.update_activity()
 
     try:
         x_coord = int(request.form["x_coord"])
@@ -191,15 +172,11 @@ def check_winner(game_id):
     """Check if there is a winner on the board"""
     game = get_game(game_id)
     if not game:
-        return {"error": "Game not found"}, 404
+        return {"error": "Game deleted due to inactivity"}, 410
 
     client_ip = get_client_ip()
-    game.clear_inactive_ips()
-
     if not is_ip_allowed(game, client_ip):
         return {"error": "Game full. Only 2 players allowed."}, 403
-
-    game.update_activity(client_ip)
 
     win_cell, win_cell2, win_cell3 = game.board.check_winner()
     if win_cell:
@@ -213,15 +190,13 @@ def reset_board(game_id):
     """Reset the board for the specified game"""
     game = get_game(game_id)
     if not game:
-        return {"error": "Game not found"}, 404
+        return {"error": "Game deleted due to inactivity"}, 410
 
     client_ip = get_client_ip()
-    game.clear_inactive_ips()
-
     if not is_ip_allowed(game, client_ip):
         return {"error": "Game full. Only 2 players allowed."}, 403
 
-    game.update_activity(client_ip)
+    game.update_activity()
     game.board.reset()
 
     return {"success": True}
