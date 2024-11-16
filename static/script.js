@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function() {
     resetInactivityTimeout();
 
     boardButton.addEventListener("click", async function() {
-        const gameId = 0;
+        const gameId = 99;
         currentGameId = gameId; 
         initializeGame(currentGameId);
     });
