@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentPlayer;
     let currentGameId = null;
     let inactivityTimeout; 
-    const inactivityDuration = 60000; 
+    const inactivityDuration = 120000; 
 
     function resetInactivityTimeout() {
         clearTimeout(inactivityTimeout);
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         } else {
             try {
-                const response = await fetch("/new_game", { method: "POST" });
+                const response = await fetch("/new_game?timestamp=${Date.now()}", { method: "POST" });
                 if (response.ok) {
                     const data = await response.json();
                     currentGameId = data.game_id;
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     resetButton.addEventListener("click", async function() {
         if (currentGameId !== null) {
-            await fetch(`/game/${currentGameId}/reset_board`, { method: "POST" });
+            await fetch(`/game/${currentGameId}/reset_board?timestamp=${Date.now()}`, { method: "POST" });
             updateBoard();
         }
     });
@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     async function initializeGame(gameId) {
         try {
-            const response = await fetch(`/game/${gameId}/board`);
+            const response = await fetch(`/game/${gameId}/board?timestamp=${Date.now()}`);
             const data = await response.json();
     
             if (data.error) {
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function getCurrentPlayer(callback) {
         if (currentGameId !== null) {
-            fetch(`/game/${currentGameId}/player/current`)
+            fetch(`/game/${currentGameId}/player/current?timestamp=${Date.now()}`)
                 .then(response => response.json())
                 .then(data => {
                     currentPlayer = data.currentPlayer;
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function makeMove(x_coord, y_coord, player, event) {
-        fetch(`/game/${currentGameId}/cell/mark`, {
+        fetch(`/game/${currentGameId}/cell/mark?timestamp=${Date.now()}`, {
             method: "POST",
             headers: {
                 "Content-type": "application/x-www-form-urlencoded"
@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function updateBoard() {
         if (currentGameId !== null) {
-            fetch(`/game/${currentGameId}/board`)
+            fetch(`/game/${currentGameId}/board?timestamp=${Date.now()}`)
                 .then(response => response.json())
                 .then(data => {
                     data.grid.forEach(cell => {
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function checkWinner() {
         if (currentGameId !== null) {
-            fetch(`/game/${currentGameId}/check_winner`)
+            fetch(`/game/${currentGameId}/check_winner?timestamp=${Date.now()}`)
                 .then(response => response.json())
                 .then(winnerData => {
                     if (winnerData.win_cell) {
