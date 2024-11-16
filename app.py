@@ -109,7 +109,7 @@ def get_board(game_id):
     """Get the current state of the board or deleting game if inactive"""
     game = get_game(game_id)
     if not game:
-        return {"error": "Game deleted due to inactivity"}, 410
+        return {"error": "Inactive game."}, 410
 
     client_ip = get_client_ip()
     if not is_ip_allowed(game, client_ip):
