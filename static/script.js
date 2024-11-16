@@ -32,22 +32,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
     boardButton.addEventListener("click", async function() {
         const gameId = 0;
-        currentGameId = gameId;
-        if (initializeGame()) {
-            return true;
-        } else {
-            return alert("Physical Board is Offline");
-        }
+        currentGameId = gameId; 
+        initializeGame(currentGameId);
     });
     
     playButton.addEventListener("click", async function() {
         const gameIdInputValue = gameIdInput.value;
-        
+    
         if (gameIdInputValue) {
             const gameId = parseInt(gameIdInputValue, 10);
             if (!isNaN(gameId)) {
                 currentGameId = gameId;
-                initializeGame();
+                initializeGame(currentGameId);
             } else {
                 return alert("Invalid Game ID");
             }
@@ -58,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     const data = await response.json();
                     currentGameId = data.game_id;
                     gameIdInput.value = currentGameId;
-                    initializeGame();
+                    initializeGame(currentGameId);
                 } else {
                     alert("Failed to create a new game");
                 }
@@ -82,14 +78,13 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    async function initializeGame() {
-        const gameId = parseInt(gameIdInput.value, 10);
+    async function initializeGame(gameId) {
         try {
             const response = await fetch(`/game/${gameId}/board`);
             const data = await response.json();
     
             if (data.error) {
-                alert(data.error);
+                alert("Physical Board is Offline");
                 return; 
             }
     
@@ -98,14 +93,13 @@ document.addEventListener("DOMContentLoaded", function() {
             turnMessage.style.display = "block";
             board.style.display = "grid";
             resetButton.style.display = "block";
-            
+    
             updateBoard();
             getCurrentPlayer(updateTurnMessage);
             setInterval(updateBoard, 1000);
             setInterval(() => getCurrentPlayer(updateTurnMessage), 1000);
             setInterval(checkWinner, 1000);
         } catch (error) {
-            alert("Error while connecting to the game. Please try again.");
             console.error(error);
         }
     }
