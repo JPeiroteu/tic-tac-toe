@@ -104,6 +104,20 @@ def new_game(game_id):
     games[game_id] = Game()
     return {"game_id": game_id}
 
+@app.route("/game/physical_board", methods=["GET"])
+def get_physical_board():
+    """Assign a game ID to the physical board and return the board state."""
+    game_id = 99  
+    game = get_game(game_id)
+    if not game:
+        return {"error": "Inactive game."}, 410
+
+    client_ip = get_client_ip()
+    if not is_ip_allowed(game, client_ip):
+        return {"error": "Game full. Only 2 players allowed."}, 403
+
+    return {"game_id": game_id, "grid": game.board.to_dict()}
+
 @app.route("/game/<int:game_id>/board")
 def get_board(game_id):
     """Get the current state of the board or deleting game if inactive"""

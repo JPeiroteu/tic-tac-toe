@@ -32,11 +32,17 @@ document.addEventListener("DOMContentLoaded", function() {
     resetInactivityTimeout();
 
     boardButton.addEventListener("click", async function() {
-        const gameId = 99;
-        currentGameId = gameId; 
-        initializeGame(currentGameId);
+        const response = await fetch(`/game/physical_board?timestamp=${Date.now()}`, { method: "GET" });
+        const data = await response.json();
+        
+        if (data.game_id) {
+            currentGameId = data.game_id; 
+            initializeGame(currentGameId);
+        } else {
+            return alert(data.error);
+        }
     });
-    
+
     playButton.addEventListener("click", async function() {
         const gameIdInputValue = gameIdInput.value;
     
@@ -57,10 +63,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     gameIdInput.value = currentGameId;
                     initializeGame(currentGameId);
                 } else {
-                    alert("Failed to create a new game");
+                    return alert(data.error);
                 }
             } catch (error) {
-                alert("Error connecting to the server");
+                return alert(data.error);
             }
         }
     });
@@ -85,8 +91,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = await response.json();
     
             if (data.error) {
-                alert(data.error);
-                return; 
+                return alert(data.error);
             }
     
             boardButton.style.display = "none";
