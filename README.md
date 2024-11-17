@@ -35,7 +35,7 @@ git clone https://github.com/JPeiroteu/tictactoe-iot-fusion.git
 Navigate to the project directory and install the necessary Python dependencies:
 
 ```bash
-pip install flask
+pip install flask flask-limiter
 ```
 
 ### Start the Web Server
