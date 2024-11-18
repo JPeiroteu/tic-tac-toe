@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentPlayer;
     let currentGameId = null;
     let inactivityTimeout; 
-    let gameEnded = false; 
     const inactivityDuration = 120000; 
 
     function resetInactivityTimeout() {
@@ -162,9 +161,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function updateTurnMessage() {
-        if (!gameEnded) { 
-            turnMessage.textContent = currentPlayer ? `${currentPlayer}'s turn` : "";
-        }
+        turnMessage.textContent = currentPlayer ? `${currentPlayer}'s turn` : "";
     }
 
     function checkWinner() {
@@ -175,10 +172,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (winnerData.win_cell) {
                         const winnerMarker = winnerData.win_cell.marker;
                         turnMessage.textContent = `${winnerMarker} wins!`;
-                        gameEnded = true; 
                     } else if (winnerData.winner === "Tie") {
                         turnMessage.textContent = "It's a tie!";
-                        gameEnded = true; 
                     }
                 });
         }
