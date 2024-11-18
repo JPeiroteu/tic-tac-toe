@@ -6,10 +6,19 @@ This module provides the routes and handlers for a Tic Tac Toe game using Flask.
 
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from tictactoe.board import Board
+
 import random
 
 app = Flask(__name__)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://",
+)
 
 class Game:
     """Represents a Tic Tac Toe game with a board and the current player and IPs"""
@@ -93,6 +102,7 @@ def welcome():
 
 @app.route("/new_game", defaults={'game_id': None}, methods=["POST"])
 @app.route("/new_game/<int:game_id>", methods=["POST"]) # Uses provided game ID from physical board
+@limiter.limit("20 per minute") # Limit 20 requests per minute
 def new_game(game_id):
     """Creates new game with random ID or uses the provided ID for physical board (when online)"""
     if game_id is None:
