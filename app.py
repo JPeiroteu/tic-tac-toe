@@ -16,9 +16,11 @@ app = Flask(__name__)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"],
+    default_limits=["28800 per day", "1200 per hour"],
     storage_uri="memory://",
 )
+
+SECRET_TOKEN = "Secret12345"
 
 class Game:
     """Represents a Tic Tac Toe game with a board and the current player and IPs"""
@@ -105,6 +107,12 @@ def welcome():
 @limiter.limit("20 per minute") # Limit 20 requests per minute
 def new_game(game_id):
     """Creates new game with random ID or uses the provided ID for physical board (when online)"""
+    if game_id is not None:
+        client_secret = request.headers.get('X-Secure-Token')
+
+        if client_secret != SECRET_TOKEN:
+            return {"error": "Unauthorized. Invalid token."}, 403
+    
     if game_id is None:
         game_id = generate_game_id()
 
