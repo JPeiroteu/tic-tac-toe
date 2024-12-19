@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
     board.style.display = "none";
     resetButton.style.display = "none";
 
+    let gameEnded = false;
     let currentPlayer;
     let currentGameId = null;
     let inactivityTimeout; 
@@ -73,6 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
     resetButton.addEventListener("click", async function() {
         if (currentGameId !== null) {
             await fetch(`/game/${currentGameId}/reset_board?timestamp=${Date.now()}`, { method: "POST" });
+            gameEnded = false;
             updateBoard();
         }
     });
@@ -161,7 +163,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function updateTurnMessage() {
-        turnMessage.textContent = currentPlayer ? `${currentPlayer}'s turn` : "";
+        if (!gameEnded) {
+            turnMessage.textContent = currentPlayer ? `${currentPlayer}'s turn` : "";
+        }
     }
 
     function checkWinner() {
@@ -172,10 +176,13 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (winnerData.win_cell) {
                         const winnerMarker = winnerData.win_cell.marker;
                         turnMessage.textContent = `${winnerMarker} wins!`;
+                        gameEnded = true;
                     } else if (winnerData.winner === "Tie") {
                         turnMessage.textContent = "It's a tie!";
+                        gameEnded = true;
                     }
                 });
         }
     }
+
 });
