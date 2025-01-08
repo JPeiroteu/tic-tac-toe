@@ -51,8 +51,9 @@ python app.py
 Open your browser and navigate to:
 
 - Local: `http://localhost:5000`
-- Online (when available): `http://94.63.14.247:5000/`
-From there, you can play the game remotely or interact with the physical game board. Only when my server is available.
+- Online (when server online): [tictactoe.servegame.com](http://tictactoe.servegame.com/)
+
+From there, you can play the game remotely or interact with the physical game board. Only when my server is online.
 
 ## Code Structure
 
